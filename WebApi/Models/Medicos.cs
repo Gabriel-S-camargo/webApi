@@ -13,7 +13,5 @@ namespace App.Models
 
         [Required]
         public string Especialidade { get; set; } = string.Empty;
-
-        public ICollection<Consulta>? Consultas { get; set; }
     }
 }

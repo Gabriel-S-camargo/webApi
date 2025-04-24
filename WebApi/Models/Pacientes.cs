@@ -12,9 +12,8 @@ namespace App.Models
 
         [Required]
         public string Cpf { get; set; } = string.Empty;
-
+        // DateTime aqui mas pode apenas passar no formato de yyyy-mm-dd que ele grava com a hora zerada
         public DateTime DataNascimento { get; set; }
 
-        public ICollection<Consulta>? Consultas { get; set; }
     }
 }

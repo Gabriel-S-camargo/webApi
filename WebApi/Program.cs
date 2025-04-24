@@ -1,3 +1,4 @@
+// Dependencias
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -5,13 +6,13 @@ using System.Text;
 using App.Data;
 using App.Models;
 using App.Utils;
-
+// Builder
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Adicionando o DbContext e definindo o banco para sqlite
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=consultas.db"));
-
+    options.UseSqlite("Data Source=MedCare.db"));
+// Autenticação com token JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -24,22 +25,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = "WebAPI",
             ValidAudience = "WebAPI",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("asdcasdcasdcasdcasdcasdcasdcasdc"))
+            // Hash para poder gerar o token JWT
         };
     });
-
+// Authorization service e configurando o swagger, para poder ter uma UI da API
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+// Inicializando o APP com o build
 var app = builder.Build();
-
+// Swagger no app
 app.UseSwagger();
 app.UseSwaggerUI();
-
+// Autenticação e autorização
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Endpoints de autenticação
+// Definindo os Endpoints de autenticação no app
 app.MapPost("/login", async (Usuario login, AppDbContext db) =>
 {
     var usuario = await db.Usuarios
@@ -200,4 +202,5 @@ app.MapDelete("/deleteMedico/{id}", async (int id, AppDbContext db) =>
     }
 }).RequireAuthorization();
 
+// Rodando :)
 app.Run();
