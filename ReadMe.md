@@ -39,11 +39,11 @@ A aplicação estará disponível normalmente em: `https://localhost:5235` ou no end
 
 ```
 App/
-??? Data/               --> Contém o DbContext e configurações do banco
-??? Migrations          --> Arquivo que contem as migrations do Banco de dados gerados pelo entity Framework
-??? Models/             --> Contém as classes da camada de domínio (Paciente, Medico, etc)
-??? Utils/              --> Contém classes auxiliares (TokenService)
-??? Program.cs          --> Arquivo principal com todos os endpoints
+Data/               --> Contém o DbContext e configurações do banco
+Migrations/          --> Arquivo que contem as migrations do Banco de dados gerados pelo entity Framework
+Models/             --> Contém as classes da camada de domínio (Paciente, Medico, etc)
+Utils/              --> Contém classes auxiliares (TokenService)
+Program.cs          --> Arquivo principal com todos os endpoints
 ```
 
 ---
@@ -139,7 +139,4 @@ public class Consulta {
 Disponível em: `http://localhost:5235/swagger`
 Permite testar todas as rotas da aplicação com ou sem autenticação.
 
----
-
-Se quiser, posso gerar esse arquivo em PDF ou Markdown para facilitar o compartilhamento. Quer isso? ??
 
