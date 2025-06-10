@@ -9,10 +9,23 @@ using App.Utils;
 // Builder
 var builder = WebApplication.CreateBuilder(args);
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000")
+                                .AllowAnyHeader() 
+                                .AllowAnyMethod();
+                      });
+});
+
 // Adicionando o DbContext e definindo o banco para sqlite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=MedCare.db"));
-// Autenticação com token JWT
+// Autenticaï¿½ï¿½o com token JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -37,11 +50,13 @@ var app = builder.Build();
 // Swagger no app
 app.UseSwagger();
 app.UseSwaggerUI();
-// Autenticação e autorização
+// Autenticaï¿½ï¿½o e autorizaï¿½ï¿½o
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Definindo os Endpoints de autenticação no app
+// Definindo os Endpoints de autenticaï¿½ï¿½o no app
 app.MapPost("/login", async (Usuario login, AppDbContext db) =>
 {
     var usuario = await db.Usuarios
@@ -85,7 +100,7 @@ app.MapPut("/updatePaciente/{id}", async (int id, Paciente updated, AppDbContext
     try
     {
         var paciente = await db.Pacientes.FindAsync(id);
-        if (paciente == null) return Results.NotFound(new { mensagem = "Paciente não encontrado" });
+        if (paciente == null) return Results.NotFound(new { mensagem = "Paciente nï¿½o encontrado" });
 
         paciente.Nome = updated.Nome;
         paciente.Cpf = updated.Cpf;
@@ -101,7 +116,7 @@ app.MapDelete("/deletePaciente/{id}", async (int id, AppDbContext db) =>
     try
     {
         var paciente = await db.Pacientes.FindAsync(id);
-        if (paciente == null) return Results.NotFound(new { mensagem = "Paciente não encontrado" });
+        if (paciente == null) return Results.NotFound(new { mensagem = "Paciente nï¿½o encontrado" });
 
         db.Pacientes.Remove(paciente);
         await db.SaveChangesAsync();
@@ -130,7 +145,7 @@ app.MapPost("/createConsulta", async (Consulta consulta, AppDbContext db) =>
 
         if (!pacienteExiste || !medicoExiste)
         {
-            return Results.BadRequest(new { mensagem = "Paciente ou Médico inválido" });
+            return Results.BadRequest(new { mensagem = "Paciente ou Mï¿½dico invï¿½lido" });
         }
 
         db.Consultas.Add(consulta);
@@ -149,7 +164,7 @@ app.MapGet("/getMedicos", async (AppDbContext db) =>
     }
     catch (Exception ex)
     {
-        return Results.Problem($"Erro ao buscar médicos: {ex.Message}");
+        return Results.Problem($"Erro ao buscar mï¿½dicos: {ex.Message}");
     }
 }).RequireAuthorization();
 
@@ -163,7 +178,7 @@ app.MapPost("/createMedico", async (Medico medico, AppDbContext db) =>
     }
     catch (Exception ex)
     {
-        return Results.BadRequest(new { mensagem = $"Erro ao criar médico: {ex.Message}" });
+        return Results.BadRequest(new { mensagem = $"Erro ao criar mï¿½dico: {ex.Message}" });
     }
 }).RequireAuthorization();
 
@@ -172,7 +187,7 @@ app.MapPut("/updateMedico/{id}", async (int id, Medico medicoAtualizado, AppDbCo
     try
     {
         var medico = await db.Medicos.FindAsync(id);
-        if (medico == null) return Results.NotFound(new { mensagem = "Médico não encontrado" });
+        if (medico == null) return Results.NotFound(new { mensagem = "Mï¿½dico nï¿½o encontrado" });
 
         medico.Nome = medicoAtualizado.Nome;
         medico.Especialidade = medicoAtualizado.Especialidade;
@@ -181,7 +196,7 @@ app.MapPut("/updateMedico/{id}", async (int id, Medico medicoAtualizado, AppDbCo
     }
     catch (Exception ex)
     {
-        return Results.BadRequest(new { mensagem = $"Erro ao atualizar médico: {ex.Message}" });
+        return Results.BadRequest(new { mensagem = $"Erro ao atualizar mï¿½dico: {ex.Message}" });
     }
 }).RequireAuthorization();
 
@@ -190,7 +205,7 @@ app.MapDelete("/deleteMedico/{id}", async (int id, AppDbContext db) =>
     try
     {
         var medico = await db.Medicos.FindAsync(id);
-        if (medico == null) return Results.NotFound(new { mensagem = "Médico não encontrado" });
+        if (medico == null) return Results.NotFound(new { mensagem = "Mï¿½dico nï¿½o encontrado" });
 
         db.Medicos.Remove(medico);
         await db.SaveChangesAsync();
@@ -198,7 +213,7 @@ app.MapDelete("/deleteMedico/{id}", async (int id, AppDbContext db) =>
     }
     catch (Exception ex)
     {
-        return Results.BadRequest(new { mensagem = $"Erro ao deletar médico: {ex.Message}" });
+        return Results.BadRequest(new { mensagem = $"Erro ao deletar mï¿½dico: {ex.Message}" });
     }
 }).RequireAuthorization();
 
